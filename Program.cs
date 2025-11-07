@@ -19,30 +19,7 @@ class Program
 {
     static async Task Main(string[] args)
     {
-        // Vi ansluter till Socket servern.
-        await SocketManager.Connect();
-        
-        static void ClearCurrentConsoleLine()
-        {
-            int currentLineCursor = Console.CursorTop;
-            Console.SetCursorPosition(0, Console.CursorTop);
-            Console.Write(new string(' ', Console.WindowWidth));
-            Console.SetCursorPosition(0, currentLineCursor);
-        }
-
-        static string ReadInput()
-        {
-            string userMessage = Console.ReadLine();
-            Console.SetCursorPosition(0, Console.CursorTop - 1);
-            ClearCurrentConsoleLine();
-            return userMessage;
-        }
-
-        while (true)
-        {
-
-            await SocketManager.SendMessage(ReadInput());
-        }
-
+        Chat _chat = new Chat();
+        await _chat.StartChat();
     }
 }
