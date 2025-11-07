@@ -11,7 +11,6 @@ public class Menu
             Console.WriteLine("What would you like to do?");
             Console.WriteLine("1. Log in to the chat");
             Console.WriteLine("2. Exit");
-            Console.WriteLine("To exit the chat, type \"/quit\"");
             Console.WriteLine();
             string userActionChoise = Console.ReadLine();
             switch (int.Parse(userActionChoise))
@@ -19,7 +18,9 @@ public class Menu
                 case 1:
                     if (User.LoginUser())
                     {
+                        
                         Console.WriteLine("You have been logged in!");
+                        Console.WriteLine("To exit the chat, type \"/quit\"");
                         await StartApp();
                     }
                     else
