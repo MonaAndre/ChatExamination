@@ -17,7 +17,16 @@ public class Menu
             switch (int.Parse(userActionChoise))
             {
                 case 1:
-                   await StartApp();
+                    if (User.LoginUser())
+                    {
+                        Console.WriteLine("You have been logged in!");
+                        await StartApp();
+                    }
+                    else
+                    {
+                        Console.WriteLine("Could not login");
+                    }
+                   
                     break;
                 case 2:
                     CloseApp();
