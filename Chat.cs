@@ -1,4 +1,4 @@
-namespace ChatExample;
+namespace ChatExamination;
 
 public class Chat
 {
@@ -22,9 +22,18 @@ public class Chat
             return userMessage;
         }
 
-        while (true)
+        bool isChatting = true;
+        while (isChatting)
         {
-            await SocketManager.SendMessage(ReadInput());
+            string userInputText = ReadInput();
+            if (userInputText == "/quit")
+            {
+                isChatting = false;
+            }
+            else
+            {
+                await SocketManager.SendMessage(userInputText);
+            }
         }
     }
 }

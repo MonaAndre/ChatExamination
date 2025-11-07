@@ -1,4 +1,4 @@
-namespace ChatExample;
+namespace ChatExamination;
 
 using SocketIOClient;
 

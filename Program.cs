@@ -1,6 +1,6 @@
 ﻿using System.Security.Cryptography.X509Certificates;
 
-namespace ChatExample;
+namespace ChatExamination;
 
 // ws är protokollet som står för websocket
 // wss är samma sak som https, alltså TLS/SSL aktiverad.
@@ -19,7 +19,7 @@ class Program
 {
     static async Task Main(string[] args)
     {
-        Chat _chat = new Chat();
-        await _chat.StartChat();
+        Menu menu = new Menu();
+       await  menu.OpenMenu();
     }
 }
