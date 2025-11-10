@@ -20,6 +20,7 @@ public class Menu
                     User CurrentUser = User.LoginUser();
                     if (CurrentUser?.isLoggedIn == true)
                     {
+                        SocketManager.SetCurrentUser(CurrentUser.Username);
                         Console.WriteLine("To exit the chat, type \"/quit\"");
                         await StartApp();
                     }

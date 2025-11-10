@@ -1,8 +1,11 @@
 namespace ChatExamination;
 
-public class Message
+public class Message:ChatItem
 {
-    public string Text { get; set; }
-    public DateTime Time { get; set; }
-    public string Sender { get; set; }
+    public string MessageText { get; set; }
+
+    public string FormatMessage()
+    {
+        return $"[{Time:HH:mm:ss}] {Sender}: {MessageText}";
+    }
 }
