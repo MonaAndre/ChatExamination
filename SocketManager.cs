@@ -36,25 +36,109 @@ public class SocketManager
         // samt en handler för varje event som ska köras.
         _client.On(MessagesEventName, response =>
         {
-            var messageJson = response.GetValue<string>();
-            var message = JsonSerializer.Deserialize<Message>(messageJson,JsonSerializerOptions.Web);
-
-            if (message != null)
+            try
             {
-                messages.Add(message);
-                Console.WriteLine(message.FormatMessage());
+                var rawData = response.GetValue<JsonElement>();
+                Message message = null;
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                };
+                
+                if (rawData.ValueKind == JsonValueKind.Array && rawData.GetArrayLength() > 0)
+                {
+                    var firstElement = rawData[0];
+                    
+                    if (firstElement.ValueKind == JsonValueKind.String)
+                    {
+                        var jsonString = firstElement.GetString()?.Trim();
+                        if (!string.IsNullOrEmpty(jsonString))
+                        {
+                            message = JsonSerializer.Deserialize<Message>(jsonString, options);
+                        }
+                    }
+                    else
+                    {
+                        message = JsonSerializer.Deserialize<Message>(firstElement.GetRawText(), options);
+                    }
+                }
+                else if (rawData.ValueKind == JsonValueKind.Object)
+                {
+                    message = JsonSerializer.Deserialize<Message>(rawData.GetRawText(), options);
+                }
+                else if (rawData.ValueKind == JsonValueKind.String)
+                {
+                    var jsonString = rawData.GetString()?.Trim();
+                    if (!string.IsNullOrEmpty(jsonString))
+                    {
+                        message = JsonSerializer.Deserialize<Message>(jsonString, options);
+                    }
+                }
+
+                if (message != null && message.Sender != _currentUsername)
+                {
+                    messages.Add(message);
+                    Console.WriteLine(message.FormatMessage());
+                }
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error parsing message: {ex.Message}");
+            }
+
         });
         _client.On(EventsEventName, response =>
         {
-            var eventsJson = response.GetValue<string>();
-            var eventen = JsonSerializer.Deserialize<Event>(eventsJson,JsonSerializerOptions.Web);
-
-            if (eventen != null)
+            try
             {
-                events.Add(eventen);
-                Console.WriteLine(eventen.FormatEvent());
+                var rawData = response.GetValue<JsonElement>();
+                Event handelse = null;
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                };
+                
+                if (rawData.ValueKind == JsonValueKind.Array && rawData.GetArrayLength() > 0)
+                {
+                    var firstElement = rawData[0];
+                    
+                    if (firstElement.ValueKind == JsonValueKind.String)
+                    {
+                        var jsonString = firstElement.GetString()?.Trim();
+                        if (!string.IsNullOrEmpty(jsonString))
+                        {
+                            handelse = JsonSerializer.Deserialize<Event>(jsonString, options);
+                        }
+                    }
+                    else
+                    {
+                        handelse = JsonSerializer.Deserialize<Event>(firstElement.GetRawText(), options);
+                    }
+                }
+                else if (rawData.ValueKind == JsonValueKind.Object)
+                {
+                    handelse = JsonSerializer.Deserialize<Event>(rawData.GetRawText(), options);
+                }
+                else if (rawData.ValueKind == JsonValueKind.String)
+                {
+                    var jsonString = rawData.GetString()?.Trim();
+                    if (!string.IsNullOrEmpty(jsonString))
+                    {
+                        handelse = JsonSerializer.Deserialize<Event>(jsonString, options);
+                    }
+                }
+
+                if (handelse != null)
+                {
+                    events.Add(handelse);
+                    Console.WriteLine(handelse.FormatEvent());
+                }
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error parsing event: {ex.Message}");
+            }
+
         });
 
         // Kod vi kan köra när vi etablerar en anslutning
