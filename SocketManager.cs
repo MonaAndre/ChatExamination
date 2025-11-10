@@ -79,6 +79,7 @@ public class SocketManager
                 Console.WriteLine($"Disconnected: {reason}");
         }
     }
+// Sätter nuvarande användaren
     public static void SetCurrentUser(string username)
     {
         _currentUsername = username;
@@ -93,11 +94,7 @@ public class SocketManager
             Time = DateTime.Now,
             MessageText = messageText
         };
-        
-        var json = JsonSerializer.Serialize(message);
-        await _client.EmitAsync(EventName, json);
-        
-        // Add to local message list and display
+        await _client.EmitAsync(EventName, message);
         messages.Add(message);
         Console.WriteLine(message.FormatMessage());
     }
