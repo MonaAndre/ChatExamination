@@ -19,6 +19,7 @@ class Program
 {
     static async Task Main(string[] args)
     {
+        Console.WriteLine("Welcome to the online chat console application!");
         Menu menu = new Menu();
        await  menu.OpenMenu();
     }

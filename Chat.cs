@@ -29,7 +29,8 @@ public class Chat
             if (userInputText == "/quit")
             {
                 Console.Clear();
-                Console.WriteLine("Disconnected!");
+                Console.WriteLine("Disconnecting...");
+                await SocketManager.DisconnectAsync();
                 isChatting = false;
             }
             else
