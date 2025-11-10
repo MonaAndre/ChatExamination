@@ -6,6 +6,6 @@ public class Message:ChatItem
 
     public string FormatMessage()
     {
-        return $"[{Time:HH:mm:ss}] {Sender}: {MessageText}";
+        return $"[{DateTime.Now}] {Sender}: {MessageText}";
     }
 }
