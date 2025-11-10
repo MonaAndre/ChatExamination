@@ -10,16 +10,30 @@ public class Menu
         {
             Console.WriteLine("What would you like to do?");
             Console.WriteLine("1. Log in to the chat");
-            Console.WriteLine("2. Exit");
-            Console.WriteLine("To exit the chat, type \"/quit\"");
+            Console.WriteLine("2. Register new user");
+            Console.WriteLine("3. Exit");
             Console.WriteLine();
             string userActionChoise = Console.ReadLine();
             switch (int.Parse(userActionChoise))
             {
                 case 1:
-                   await StartApp();
+                    User CurrentUser = User.LoginUser();
+                    if (CurrentUser?.isLoggedIn == true)
+                    {
+                        Console.WriteLine("To exit the chat, type \"/quit\"");
+                        await StartApp();
+                    }
+                    else
+                    {
+                        Console.WriteLine("Could not login");
+                    }
+
                     break;
                 case 2:
+                    User.RegisterUser();
+                    break;
+
+                case 3:
                     CloseApp();
                     break;
             }
@@ -34,7 +48,7 @@ public class Menu
 
     public void CloseApp()
     {
+        Console.WriteLine("You closed the application");
         Environment.Exit(0);
     }
-    
 }
