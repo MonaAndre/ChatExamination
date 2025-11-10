@@ -1,3 +1,5 @@
+using System.Text.Json;
+
 namespace ChatExamination;
 
 using SocketIOClient;
@@ -6,7 +8,8 @@ public class SocketManager
 {
     private static SocketIO _client;
     private static readonly string Path = "/sys25d";
-    public static List<string> messages;
+    public static List<Message> messages;
+    private static string _currentUsername;
 
     // Här kan vi välja ett unikt event namn för meddelanden.
     private static readonly string EventName = "monas_chat";
@@ -30,9 +33,14 @@ public class SocketManager
         // samt en handler för varje event som ska köras.
         _client.On(EventName, response =>
         {
-            string receivedMessage = response.GetValue<string>();
+            var messageJson = response.GetValue<JsonElement>();
+            var message = JsonSerializer.Deserialize<Message>(messageJson.GetRawText());
 
-            Console.WriteLine($"Received message: {receivedMessage}");
+            if (message != null)
+            {
+                messages.Add(message);
+                Console.WriteLine(message.FormatMessage());
+            }
         });
 
         // Kod vi kan köra när vi etablerar en anslutning
@@ -71,11 +79,26 @@ public class SocketManager
                 Console.WriteLine($"Disconnected: {reason}");
         }
     }
+    public static void SetCurrentUser(string username)
+    {
+        _currentUsername = username;
+    }
 
     // Skicka meddelanden.
-    public static async Task SendMessage(string message)
+    public static async Task SendMessage(string messageText)
     {
-        await _client.EmitAsync(EventName, message);
-        Console.WriteLine($"You said: {message}");
+        Message message = new Message
+        {
+            Sender = _currentUsername,
+            Time = DateTime.Now,
+            MessageText = messageText
+        };
+        
+        var json = JsonSerializer.Serialize(message);
+        await _client.EmitAsync(EventName, json);
+        
+        // Add to local message list and display
+        messages.Add(message);
+        Console.WriteLine(message.FormatMessage());
     }
 }
