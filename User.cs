@@ -19,6 +19,8 @@ public class User
 
     public static User LoginUser()
     {
+        Console.WriteLine();
+        Console.WriteLine("LOGIN");
         string usernameInput = string.Empty;
         string passwordInput = string.Empty;
         while (string.IsNullOrWhiteSpace(usernameInput))

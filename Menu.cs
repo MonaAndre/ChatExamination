@@ -12,9 +12,19 @@ public class Menu
             Console.WriteLine("1. Log in to the chat");
             Console.WriteLine("2. Register new user");
             Console.WriteLine("3. Exit");
-            Console.WriteLine();
-            string userActionChoise = Console.ReadLine();
-            switch (int.Parse(userActionChoise))
+           
+            int userActionChoise;
+            while (true)
+            {
+                Console.Write("Write a number from 1 to 3: ");
+                string? input = Console.ReadLine();
+
+                if (int.TryParse(input, out userActionChoise) && userActionChoise >= 1 && userActionChoise <= 3)
+                    break;
+
+                Console.WriteLine("Invalid input. Please enter 1, 2 or 3.\n");
+            }
+            switch (userActionChoise)
             {
                 case 1:
                     User CurrentUser = User.LoginUser();

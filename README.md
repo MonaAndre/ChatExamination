@@ -22,12 +22,12 @@ Efter godkänd inlämning ska du kunna:
 
 Bygg en konsolbaserad chatklient som ansluter till en färdig Socket.IO-server. Användaren ska kunna:
 
-- [x]Ange användarnamn vid start (validera att det inte är tomt).
-- [x]Ansluta till chatten och se status (ansluten/urkopplad).
-- [x]Skicka och ta emot meddelanden i realtid.
-- Se tidsstämpel, avsändare och meddelandetext för varje meddelande.
-- Se händelser i chatten, t.ex. när någon joinar eller lämnar.
-- [x]Avsluta programmet snyggt (koppla ner och städa resurser).
+- [x] Ange användarnamn vid start (validera att det inte är tomt).
+- [x] Ansluta till chatten och se status (ansluten/urkopplad).
+- [x] Skicka och ta emot meddelanden i realtid.
+- [x] Se tidsstämpel, avsändare och meddelandetext för varje meddelande.
+- [x] Se händelser i chatten, t.ex. när någon joinar eller lämnar.
+- [x] Avsluta programmet snyggt (koppla ner och städa resurser).
 
 ---
 
