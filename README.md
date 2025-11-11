@@ -26,7 +26,7 @@ Bygg en konsolbaserad chatklient som ansluter till en färdig Socket.IO-server. 
 - [x] Ansluta till chatten och se status (ansluten/urkopplad).
 - [x] Skicka och ta emot meddelanden i realtid.
 - [x] Se tidsstämpel, avsändare och meddelandetext för varje meddelande.
-- Se händelser i chatten, t.ex. när någon joinar eller lämnar.
+- [x] Se händelser i chatten, t.ex. när någon joinar eller lämnar.
 - [x] Avsluta programmet snyggt (koppla ner och städa resurser).
 
 ---
