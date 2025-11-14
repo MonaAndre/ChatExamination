@@ -47,21 +47,58 @@ public class Chat
         while (isChatting)
         {
             var userInputText = ReadInput();
-            if (userInputText == "/quit")
-            {
-                Console.Clear();
-                await SocketManager.DisconnectAsync();
-                isChatting = false;
-            }
-            else if (string.IsNullOrWhiteSpace(userInputText))
+
+            if (string.IsNullOrWhiteSpace(userInputText))
             {
                 Console.Write("You can not send a empty message, to continue chat press enter");
                 userInputText = ReadInput();
             }
             else
             {
-                await SocketManager.SendMessage(userInputText);
+                switch (userInputText)
+                {
+                    case "/quit":
+                        Console.Clear();
+                        await SocketManager.DisconnectAsync();
+                        isChatting = false;
+                        break;
+
+                    case "/history 20":
+                        OpenHistory();
+                        break;
+
+                    case "/help":
+                        Console.WriteLine("HEre will shows help message");
+                        break;
+
+                    default:
+                        await SocketManager.SendMessage(userInputText);
+                        break;
+                }
             }
         }
+    }
+
+    // private void OpenChatHelper()
+    // {
+
+    // }
+    private static void OpenHistory()
+    {
+        Console.WriteLine();
+        Console.WriteLine("-----------------------------");
+        Console.WriteLine("CHAT HISTORY 20 LATEST:");
+
+        List<Message> messages = SocketManager.GetAllMessages();
+        int total = messages.Count;
+        int start = Math.Max(0, total - 20);
+
+        for (int i = start; i < total; i++)
+        {
+            Console.WriteLine(messages[i].FormatMessage());
+        }
+
+        Console.WriteLine("-----------------------------");
+        Console.WriteLine("You can continue chatting");
     }
 }

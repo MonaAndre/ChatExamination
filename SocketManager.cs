@@ -8,7 +8,7 @@ public class SocketManager
 {
     private static SocketIO _client;
     private static readonly string Path = "/sys25d";
-    private static List<Message> messages;
+    public static List<Message> messages;
     private static List<Event> events;
     private static string _currentUsername;
     private static bool _isCurrentlyTyping = false;
@@ -238,5 +238,10 @@ public class SocketManager
         {
             _ = SendTypingIndicator(false);
         }
+    }
+
+    public static List<Message> GetAllMessages()
+    {
+        return messages;
     }
 }

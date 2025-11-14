@@ -34,10 +34,10 @@ Bygg en konsolbaserad chatklient som ansluter till en färdig Socket.IO-server. 
 ## Bonusdelar
 
 - Persistens: Spara/ladda meddelandehistorik till/från appen mellan start.
-- En meny eller kommandon (ex `/help`, `/quit`, `/history 20`).
+- [ ] En meny eller kommandon (ex `/help`, `/quit`, `/history 20`).
 - Direktmeddelanden: `/dm <user> <text>`
 - Kanaler/rum: Stöd för att gå med i/byta rum, t.ex. `/join general`.
-- Indikator när någon skriver, exempelvis "Ahmad skriver...".
+- [x] Indikator när någon skriver, exempelvis "Ahmad skriver...".
 
 ---
 

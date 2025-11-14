@@ -20,6 +20,7 @@ class Program
    private static async Task Main(string[] args)
     {
         Console.WriteLine("Welcome to the online chat console application!");
+        Console.WriteLine("------------------------------------");
         var menu = new Menu();
         await menu.OpenMenu();
     }
