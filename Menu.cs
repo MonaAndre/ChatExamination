@@ -32,7 +32,10 @@ public class Menu
                     if (currentUser?.isLoggedIn == true)
                     {
                         SocketManager.SetCurrentUser(currentUser.Username);
+                        Console.WriteLine();
                         Console.WriteLine("To exit the chat, type \"/quit\"");
+                        Console.WriteLine("To get help with how does chat works, type \"/help\"");
+                        Console.WriteLine("To se up to 20 last messages, type \"/history 20\"");
                         await StartApp();
                     }
                     else
