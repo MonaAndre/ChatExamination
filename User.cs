@@ -55,12 +55,12 @@ public class User
             return null;
         }
 
-        User CurrentUser = new User(foundUser.Username, foundUser.Password)
+        User currentUser = new User(foundUser.Username, foundUser.Password)
         {
             isLoggedIn = true
         };
-        Console.WriteLine($"Welcome {CurrentUser.Username}, You have been logged in!");
-        return CurrentUser;
+        Console.WriteLine($"Welcome {currentUser.Username}, You have been logged in!");
+        return currentUser;
     }
 
     public static void RegisterUser()

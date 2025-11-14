@@ -8,13 +8,15 @@ public class SocketManager
 {
     private static SocketIO _client;
     private static readonly string Path = "/sys25d";
-    public static List<Message> messages;
-    public static List<Event> events;
+    private static List<Message> messages;
+    private static List<Event> events;
     private static string _currentUsername;
+    private static bool _isCurrentlyTyping = false;
 
     // Här kan vi välja ett unikt event namn för meddelanden.
     private static readonly string MessagesEventName = "monas_chat";
     private static readonly string EventsEventName = "monas_events";
+    private static readonly string TypingEventName = "monas_typing";
 
     static SocketManager()
     {
@@ -34,47 +36,12 @@ public class SocketManager
 
         // Här nedan anger vi de events vi vill lyssna på
         // samt en handler för varje event som ska köras.
+        // event för meddelande
         _client.On(MessagesEventName, response =>
         {
             try
             {
-                var rawData = response.GetValue<JsonElement>();
-                Message message = null;
-                var options = new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true
-                };
-                
-                if (rawData.ValueKind == JsonValueKind.Array && rawData.GetArrayLength() > 0)
-                {
-                    var firstElement = rawData[0];
-                    
-                    if (firstElement.ValueKind == JsonValueKind.String)
-                    {
-                        var jsonString = firstElement.GetString()?.Trim();
-                        if (!string.IsNullOrEmpty(jsonString))
-                        {
-                            message = JsonSerializer.Deserialize<Message>(jsonString, options);
-                        }
-                    }
-                    else
-                    {
-                        message = JsonSerializer.Deserialize<Message>(firstElement.GetRawText(), options);
-                    }
-                }
-                else if (rawData.ValueKind == JsonValueKind.Object)
-                {
-                    message = JsonSerializer.Deserialize<Message>(rawData.GetRawText(), options);
-                }
-                else if (rawData.ValueKind == JsonValueKind.String)
-                {
-                    var jsonString = rawData.GetString()?.Trim();
-                    if (!string.IsNullOrEmpty(jsonString))
-                    {
-                        message = JsonSerializer.Deserialize<Message>(jsonString, options);
-                    }
-                }
-
+                var message = ParseSocketData<Message>(response);
                 if (message != null && message.Sender != _currentUsername)
                 {
                     messages.Add(message);
@@ -85,64 +52,47 @@ public class SocketManager
             {
                 Console.WriteLine($"Error parsing message: {ex.Message}");
             }
-
         });
+        // event för events (joinat chat och lämnat chat)
         _client.On(EventsEventName, response =>
         {
             try
             {
-                var rawData = response.GetValue<JsonElement>();
-                Event handelse = null;
-                var options = new JsonSerializerOptions
+                var eventItem = ParseSocketData<Event>(response);
+                if (eventItem != null)
                 {
-                    PropertyNameCaseInsensitive = true
-                };
-                
-                if (rawData.ValueKind == JsonValueKind.Array && rawData.GetArrayLength() > 0)
-                {
-                    var firstElement = rawData[0];
-                    
-                    if (firstElement.ValueKind == JsonValueKind.String)
-                    {
-                        var jsonString = firstElement.GetString()?.Trim();
-                        if (!string.IsNullOrEmpty(jsonString))
-                        {
-                            handelse = JsonSerializer.Deserialize<Event>(jsonString, options);
-                        }
-                    }
-                    else
-                    {
-                        handelse = JsonSerializer.Deserialize<Event>(firstElement.GetRawText(), options);
-                    }
-                }
-                else if (rawData.ValueKind == JsonValueKind.Object)
-                {
-                    handelse = JsonSerializer.Deserialize<Event>(rawData.GetRawText(), options);
-                }
-                else if (rawData.ValueKind == JsonValueKind.String)
-                {
-                    var jsonString = rawData.GetString()?.Trim();
-                    if (!string.IsNullOrEmpty(jsonString))
-                    {
-                        handelse = JsonSerializer.Deserialize<Event>(jsonString, options);
-                    }
-                }
-
-                if (handelse != null)
-                {
-                    events.Add(handelse);
-                    Console.WriteLine(handelse.FormatEvent());
+                    events.Add(eventItem);
+                    Console.WriteLine(eventItem.FormatEvent());
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error parsing event: {ex.Message}");
             }
+        });
 
+        // event för att kolla om någon skriver meddelange
+        _client.On(TypingEventName, response =>
+        {
+            try
+            {
+                var typing = ParseSocketData<TypingIndicator>(response);
+                if (typing != null && typing.Sender != _currentUsername)
+                {
+                    if (typing.IsTyping)
+                    {
+                        Console.WriteLine(typing.FormatTyping());
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error parsing typing indicator: {ex.Message}");
+            }
         });
 
         // Kod vi kan köra när vi etablerar en anslutning
-        _client.OnConnected += async(sender, args) =>
+        _client.OnConnected += async (sender, args) =>
         {
             Console.WriteLine("Connected!");
             await SendEvent(" joined the chat");
@@ -151,12 +101,54 @@ public class SocketManager
         // Kod vi kan köra när vi tappar anslutningen
         _client.OnDisconnected += (sender, args) => { Console.WriteLine("Disconnected!"); };
 
-
         await _client.ConnectAsync();
 
         // Vi lägger en fördröjning på 2000ms (2s) för att se till att klienten har anslutit och satt upp allt.
         await Task.Delay(2000);
         Console.WriteLine($"Connected: {_client.Connected}");
+    }
+
+    // lägger in parsing av resposns data i en separat method för att inte upprepa samma parsing i varje event
+    static T ParseSocketData<T>(SocketIOResponse response) where T : class
+    {
+        var rawData = response.GetValue<JsonElement>();
+        T result = null;
+        var options = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        };
+
+        if (rawData.ValueKind == JsonValueKind.Array && rawData.GetArrayLength() > 0)
+        {
+            var firstElement = rawData[0];
+
+            if (firstElement.ValueKind == JsonValueKind.String)
+            {
+                var jsonString = firstElement.GetString()?.Trim();
+                if (!string.IsNullOrEmpty(jsonString))
+                {
+                    result = JsonSerializer.Deserialize<T>(jsonString, options);
+                }
+            }
+            else
+            {
+                result = JsonSerializer.Deserialize<T>(firstElement.GetRawText(), options);
+            }
+        }
+        else if (rawData.ValueKind == JsonValueKind.Object)
+        {
+            result = JsonSerializer.Deserialize<T>(rawData.GetRawText(), options);
+        }
+        else if (rawData.ValueKind == JsonValueKind.String)
+        {
+            var jsonString = rawData.GetString()?.Trim();
+            if (!string.IsNullOrEmpty(jsonString))
+            {
+                result = JsonSerializer.Deserialize<T>(jsonString, options);
+            }
+        }
+
+        return result;
     }
 
     // Här kopplar vi ifrån socketio servern
@@ -181,7 +173,8 @@ public class SocketManager
                 Console.WriteLine($"Disconnected: {reason}");
         }
     }
-// Sätter nuvarande användaren
+
+    // Sätter nuvarande användaren
     public static void SetCurrentUser(string username)
     {
         _currentUsername = username;
@@ -190,7 +183,7 @@ public class SocketManager
     // Skicka meddelanden.
     public static async Task SendMessage(string messageText)
     {
-        Message message = new Message
+        var message = new Message
         {
             Sender = _currentUsername,
             Time = DateTime.Now,
@@ -200,12 +193,11 @@ public class SocketManager
         messages.Add(message);
         Console.WriteLine(message.FormatMessage());
     }
-    
-    // Skicka event.
 
+    // Skicka event.
     private static async Task SendEvent(string eventText)
     {
-        Event eventItem = new Event
+        var eventItem = new Event
         {
             Sender = _currentUsername,
             Time = DateTime.Now,
@@ -214,5 +206,37 @@ public class SocketManager
 
         await _client.EmitAsync(EventsEventName, eventItem);
         Console.WriteLine(eventItem.FormatEvent());
+    }
+
+    //skicka event när jag skriver ett meddelande
+    private static async Task SendTypingIndicator(bool isTyping)
+    {
+        var typing = new TypingIndicator
+        {
+            Sender = _currentUsername,
+            IsTyping = isTyping,
+            Time = DateTime.Now
+        };
+
+        await _client.EmitAsync(TypingEventName, typing);
+        _isCurrentlyTyping = isTyping;
+    }
+
+    //ändra värde på indikator till true när man skriver
+    public static void NotifyTyping()
+    {
+        if (!_isCurrentlyTyping)
+        {
+            _ = SendTypingIndicator(true);
+        }
+    }
+
+    //ändra värde på indikator till false när man har skickat meddelande 
+    public static void NotifyStopTyping()
+    {
+        if (_isCurrentlyTyping)
+        {
+            _ = SendTypingIndicator(false);
+        }
     }
 }

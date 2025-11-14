@@ -12,25 +12,26 @@ public class Menu
             Console.WriteLine("1. Log in to the chat");
             Console.WriteLine("2. Register new user");
             Console.WriteLine("3. Exit");
-           
-            int userActionChoise;
+
+            int userActionChoice;
             while (true)
             {
                 Console.Write("Write a number from 1 to 3: ");
-                string? input = Console.ReadLine();
+                string ? input = Console.ReadLine();
 
-                if (int.TryParse(input, out userActionChoise) && userActionChoise >= 1 && userActionChoise <= 3)
+                if (int.TryParse(input, out userActionChoice) && userActionChoice >= 1 && userActionChoice <= 3)
                     break;
 
                 Console.WriteLine("Invalid input. Please enter 1, 2 or 3.\n");
             }
-            switch (userActionChoise)
+
+            switch (userActionChoice)
             {
                 case 1:
-                    User CurrentUser = User.LoginUser();
-                    if (CurrentUser?.isLoggedIn == true)
+                    var currentUser = User.LoginUser();
+                    if (currentUser?.isLoggedIn == true)
                     {
-                        SocketManager.SetCurrentUser(CurrentUser.Username);
+                        SocketManager.SetCurrentUser(currentUser.Username);
                         Console.WriteLine("To exit the chat, type \"/quit\"");
                         await StartApp();
                     }
@@ -51,13 +52,13 @@ public class Menu
         }
     }
 
-    public async Task StartApp()
+    private static async Task StartApp()
     {
-        Chat _chat = new Chat();
-        await _chat.StartChat();
+        var chat = new Chat();
+        await chat.StartChat();
     }
 
-    public void CloseApp()
+    private static void CloseApp()
     {
         Console.WriteLine("You closed the application");
         Environment.Exit(0);
