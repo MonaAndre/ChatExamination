@@ -68,7 +68,7 @@ public class Chat
                         break;
 
                     case "/help":
-                        Console.WriteLine("HEre will shows help message");
+                        OpenChatHelper();
                         break;
 
                     default:
@@ -79,10 +79,21 @@ public class Chat
         }
     }
 
-    // private void OpenChatHelper()
-    // {
+    private static void OpenChatHelper()
+    {
+        Console.WriteLine();
+        Console.WriteLine("-----------------------------");
+        Console.WriteLine("How To use this chat");
+        Console.WriteLine(
+            "1. You can send a new message all people in the chat can see who send it by username, time, and messege text");
+        Console.WriteLine("2. You can not send empty message");
+        Console.WriteLine("3. You can logout from the chat by typing /quit");
+        Console.WriteLine("4. You can see 20 latest messages by typing /history 20");
+        Console.WriteLine("4. You can open this halper by typing /help");
+        Console.WriteLine("-----------------------------");
+        Console.WriteLine("You can continue chatting");
+    }
 
-    // }
     private static void OpenHistory()
     {
         Console.WriteLine();
