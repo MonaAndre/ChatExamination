@@ -61,7 +61,7 @@ Användaren kan stänga av application genom att välja 3 i huvudmenyn
 
 ## 🔧 Installation & Körning
 ```bash
-git clone [https://github.com/yourusername/ChatExamination.git](https://github.com/MonaAndre/ChatExamination.git)
+git clone https://github.com/MonaAndre/ChatExamination.git
 ```
 ```bash
 cd ChatExamination
