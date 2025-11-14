@@ -57,7 +57,7 @@ Användaren kan stänga av application genom att välja 3 i huvudmenyn
 | `Chat.cs`          | Huvudlogik för chattslingan, användarinput och validering |
 | `SocketManager.cs` | Hanterar serveranslutning, event-sändning och mottagning (Socket.IO) |
 | `Message.cs`       | Modell för meddelanden, inklusive formatering och presentation |
-| `UserManager.cs`   | Registrering, inloggning och användarhantering |
+| `User.cs`          | Registrering, inloggning och användarhantering |
 
 ## 🔧 Installation & Körning
 ```bash
